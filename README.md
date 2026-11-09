@@ -1,8 +1,7 @@
 # talos-installer-zfs
 
 Talos installer images with `siderolabs/zfs` + `containdk/talos-zpool-extension`,
-plus `siderolabs/amd-ucode` and `siderolabs/nut-client` for the AMD Ryzen 7 5825U
-backup node.
+plus `siderolabs/amd-ucode` and `siderolabs/nut-client`.
 
 `factory.talos.dev` rejects custom extension refs (`field extensions not found in
 type schematic.SystemExtensions`), so the installer is assembled locally with
