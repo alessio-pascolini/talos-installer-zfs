@@ -1,0 +1,46 @@
+name: build-installer
+
+# Builds a Talos installer image carrying the ZFS + zpool-creator extensions.
+# factory.talos.dev only accepts official extensions, so the image is assembled
+# locally with imager and published to GHCR for `talosctl install/upgrade`.
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+env:
+  TALOS_VERSION: v1.13.10
+  ZFS_EXT: ghcr.io/siderolabs/zfs:2.4.3-v1.13.10
+  ZPOOL_EXT: ghcr.io/containdk/talos-zpool-extension:0.8.1-v1.13
+  AMD_UCODE_EXT: ghcr.io/siderolabs/amd-ucode:20261019
+  NUT_EXT: ghcr.io/siderolabs/nut-client:2.8.5
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Build installer
+        run: |
+          mkdir -p out
+          docker run --rm -v "$PWD/out:/out" --privileged ghcr.io/siderolabs/imager:$TALOS_VERSION \
+            installer --arch amd64 \
+            --system-extension-image "$ZFS_EXT" \
+            --system-extension-image "$ZPOOL_EXT" \
+            --system-extension-image "$AMD_UCODE_EXT" \
+            --system-extension-image "$NUT_EXT" \
+            -o /out
+
+      - name: Load, retag, push
+        run: |
+          set -euo pipefail
+          LOADED=$(docker load -i out/installer-amd64.tar 2>&1 | sed -n 's/^Loaded image: //p')
+          echo "loaded: $LOADED"
+          TAG="ghcr.io/${{ github.repository }}:${TALOS_VERSION}"
+          docker tag "$LOADED" "$TAG"
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker push "$TAG"
+          echo "install with: talosctl install --image $TAG --nodes <ip>"
