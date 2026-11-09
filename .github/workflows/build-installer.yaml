@@ -11,7 +11,7 @@ on:
 
 env:
   TALOS_VERSION: v1.13.11
-  ZFS_EXT: ghcr.io/siderolabs/zfs:2.4.3-v1.13.11
+  ZFS_EXT: ghcr.io/siderolabs/zfs:2.4.3-v1.13.10-3-g6f9c002   # modules for 6.18.54-talos (v1.13.11 kernel)
   ZPOOL_EXT: ghcr.io/containdk/talos-zpool-extension:0.8.1-v1.13
   AMD_UCODE_EXT: ghcr.io/siderolabs/amd-ucode:20261019
   NUT_EXT: ghcr.io/siderolabs/nut-client:2.8.5
