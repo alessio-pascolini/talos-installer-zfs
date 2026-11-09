@@ -31,8 +31,7 @@ jobs:
             --system-extension-image "$ZFS_EXT" \
             --system-extension-image "$ZPOOL_EXT" \
             --system-extension-image "$AMD_UCODE_EXT" \
-            --system-extension-image "$NUT_EXT" \
-            -o /out
+            --system-extension-image "$NUT_EXT"
 
       - name: Load, retag, push
         run: |
